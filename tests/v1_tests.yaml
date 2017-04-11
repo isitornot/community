@@ -39,8 +39,8 @@
     - compare: {jsonpath_mini: 'owner',                                       expected: 'user1'}
     - compare: {jsonpath_mini: 'description',                                 expected: 'this is a description'}
     - compare: {jsonpath_mini: 'tags',            comparator: 'count_eq',     expected: 2}
-    - compare: {jsonpath_mini: 'tags.0',                                      expected: 'tag1'}
-    - compare: {jsonpath_mini: 'tags.1',                                      expected: 'tag2'}
+    - compare: {jsonpath_mini: 'tags',            comparator: contains,       expected: 'tag1'}
+    - compare: {jsonpath_mini: 'tags',            comparator: contains,       expected: 'tag2'}
 
 - test:
   - group: "Community CRUD"
