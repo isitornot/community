@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "additionalProperties": false,
+  "id": "http://api.isitornot.com/schema/communities_v1.json",
+  "properties": {
+    "version": {
+      "id": "/properties/version",
+      "type": "integer",
+      "maximum": 1,
+      "minimum": 1
+    },
+    "communities": {
+      "additionalItems": false,
+      "id": "/properties/communities",
+      "items": {
+        "additionalProperties": false,
+        "id": "/properties/communities/items",
+        "properties": {
+          "id": {
+            "id": "/properties/communities/items/properties/id",
+            "type": "integer",
+            "minimum": 1
+          },
+          "name": {
+            "id": "/properties/communities/items/properties/name",
+            "type": "string"
+          },
+          "slug": {
+            "id": "/properties/communities/items/properties/slug",
+            "type": "string",
+            "pattern": "[a-zA-Z][a-zA-Z0-9.-]*"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "slug"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "communities",
+    "version"
+  ],
+  "type": "object"
+}

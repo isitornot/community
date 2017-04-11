@@ -1,0 +1,126 @@
+---
+- test:
+  - group: "Community CRUD"
+  - name: "Ensure community doesn't exist"
+  - url: "/v1/communities/1"
+  - expected_status: [404]
+
+- test:
+  - group: "Community CRUD"
+  - name: "Create community"
+  - url: "/v1/communities"
+  - method: "POST"
+  - body: '{"slug": "test", "name": "test community", "owner": "user1", "description": "this is a description", "tags": ["tag1","tag2"]}'
+  - headers: {'Content-Type': 'application/json'}
+  - expected_status: [201]
+  - validators:
+    - compare: {header: location, comparator: contains, expected: '/v1/communities/1'}
+
+- test:
+  - group: "Community CRUD"
+  - name: "Create community #2"
+  - url: "/v1/communities"
+  - method: "POST"
+  - body: '{"slug": "test2", "owner": "user1"}'
+  - headers: {'Content-Type': 'application/json'}
+  - expected_status: [201]
+  - validators:
+    - compare: {header: location, comparator: contains, expected: '/v1/communities/2'}
+
+- test:
+  - group: "Community CRUD"
+  - name: "Ensure community exists"
+  - url: "/v1/communities/1"
+  - validators:
+    - compare: {header: content-type,             comparator: contains,       expected: 'json'}
+    - json_schema: {schema: {file: '../schema/community_detail_v1.json'}}
+    - compare: {jsonpath_mini: 'slug',                                        expected: 'test'}
+    - compare: {jsonpath_mini: 'name',                                        expected: 'test community'}
+    - compare: {jsonpath_mini: 'owner',                                       expected: 'user1'}
+    - compare: {jsonpath_mini: 'description',                                 expected: 'this is a description'}
+    - compare: {jsonpath_mini: 'tags',            comparator: 'count_eq',     expected: 2}
+    - compare: {jsonpath_mini: 'tags.0',                                      expected: 'tag1'}
+    - compare: {jsonpath_mini: 'tags.1',                                      expected: 'tag2'}
+
+- test:
+  - group: "Community CRUD"
+  - name: "Ensure community 2 exists"
+  - url: "/v1/communities/2"
+  - validators:
+    - compare: {header: content-type,              comparator: contains,      expected: 'json'}
+    - json_schema: {schema: {file: '../schema/community_detail_v1.json'}}
+    - compare: {jsonpath_mini: 'slug',                                        expected: 'test2'}
+    - compare: {jsonpath_mini: 'name',                                        expected: 'test2'}
+    - compare: {jsonpath_mini: 'owner',                                       expected: 'user1'}
+    - compare: {jsonpath_mini: 'description',                                 expected: ''}
+    - compare: {jsonpath_mini: 'tags',             comparator: 'count_eq',    expected: 0}
+
+- test:
+  - group: "Community CRUD"
+  - name: "Modify the community"
+  - url: "/v1/communities/1"
+  - method: "PATCH"
+  - body: '{"name": "Test Community 1"}'
+  - headers: {'Content-Type': 'application/json'}
+  - validators:
+    - compare: {header: content-type, comparator: contains, expected: 'json'}
+    - compare: {jsonpath_mini: 'slug', expected: 'test'}
+    - compare: {jsonpath_mini: 'name', expected: 'Test Community 1'}
+
+- test:
+  - group: "Community CRUD"
+  - name: "Check list of communities"
+  - url: "/v1/communities"
+  - validators:
+    - compare: {header: content-type, comparator: contains, expected: 'json'}
+    - compare: {jsonpath_mini: 'communities', comparator: length_eq, expected: 2}
+    - compare: {jsonpath_mini: 'communities.0.id', expected: 1}
+    - compare: {jsonpath_mini: 'communities.1.id', expected: 2}
+
+- test:
+  - group: "Community CRUD"
+  - name: "Delete community"
+  - url: "/v1/communities/1"
+  - method: "DELETE"
+  - expected_status: [204]
+
+- test:
+  - group: "Community CRUD"
+  - name: "Delete community #2"
+  - url: "/v1/communities/2"
+  - method: "DELETE"
+  - expected_status: [204]
+
+- test:
+  - group: "Community CRUD"
+  - name: "Ensure community was deleted"
+  - url: "/v1/communities/1"
+  - expected_status: [404]
+
+- test:
+  - group: "Community CRUD"
+  - name: "Create community #3"
+  - url: "/v1/communities"
+  - method: "POST"
+  - body: '{"slug": "test3", "owner": "user2"}'
+  - headers: {'Content-Type': 'application/json'}
+  - expected_status: [201]
+  - validators:
+    - compare: {header: location, comparator: contains, expected: '/v1/communities/3'}
+
+- test:
+  - group: "Community CRUD"
+  - name: "Ensure community exists"
+  - url: "/v1/communities/3"
+  - validators:
+    - compare: {header: content-type, comparator: contains, expected: 'json'}
+    - compare: {jsonpath_mini: 'slug', expected: 'test3'}
+
+- test:
+  - group: "Community CRUD"
+  - name: "Check final list of communities"
+  - url: "/v1/communities"
+  - validators:
+    - compare: {header: content-type, comparator: contains, expected: 'json'}
+    - compare: {jsonpath_mini: 'communities', comparator: length_eq, expected: 1}
+    - compare: {jsonpath_mini: 'communities.0.id', expected: 3}

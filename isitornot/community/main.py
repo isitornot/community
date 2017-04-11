@@ -2,14 +2,17 @@
 
 
 import os.path
+from isitornot.db import PonyDatabase
 from sanic import Sanic, response
 from sanic_session import InMemorySessionInterface
 from sanic_openapi import swagger_blueprint, openapi_blueprint
 from sanic_jinja2 import SanicJinja2
 try:
     from .views_rest_v1 import blueprint_rest_v1
+    from . import models
 except:
     from views_rest_v1 import blueprint_rest_v1
+    import models
 
 
 DEFAULT_CONFIG = {
@@ -18,7 +21,10 @@ DEFAULT_CONFIG = {
         'CLIENT_ID': 'INVALID_CLIENT_ID',
         'REDIRECT_URL': 'http://localhost:9000/auth_callback',
         'DOMAIN': 'USER.auth0.com'
-    }
+    },
+    'DB_PROVIDER': 'sqlite',
+    'DB_ARGS': [':memory:'],
+    'DB_KARGS': {'create_db': True}
 }
 
 
@@ -56,4 +62,9 @@ def index(_):
 
 
 if __name__ == '__main__':
+    from pony import orm
+    #orm.sql_debug(True)
+    db = PonyDatabase()
+    db.bind(app.config['DB_PROVIDER'], *app.config['DB_ARGS'], **app.config['DB_KARGS'])
+    db.generate_mapping(create_tables=True)
     app.run(host='0.0.0.0', port='9000', debug=True)
