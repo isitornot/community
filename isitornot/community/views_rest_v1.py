@@ -22,7 +22,8 @@ class CommunityView(HTTPMethodView):
                 rval.append({
                     'id': c.id,
                     'slug': c.slug,
-                    'name': c.name if c.name is not "" else c.slug
+                    'name': c.name if c.name is not "" else c.slug,
+                    'icon': c.icon
                 })
             return response.json({'communities': rval})
 
@@ -36,6 +37,7 @@ class CommunityView(HTTPMethodView):
             c = Community(slug=request.json['slug'],
                           name=request.json.get('name', ""),
                           description=request.json.get('description', ""),
+                          icon=request.json.get('icon', ""),
                           owner=request.json['owner'])
             for tag_name in request.json.get('tags', []):
                 try:
@@ -69,6 +71,8 @@ class CommunityDetailView(HTTPMethodView):
                     c.name = request.json['name']
                 if 'description' in request.json:
                     c.description = request.json['description']
+                if 'icon' in request.json:
+                    c.icon = request.json['icon']
                 if 'owner' in request.json:
                     c.owner = request.json['owner']
                 if 'tags' in request.json:

@@ -1,4 +1,7 @@
 ---
+- config:
+  - testset: "Testing of the community v1 API"
+
 - test:
   - group: "Community CRUD"
   - name: "Ensure community doesn't exist"

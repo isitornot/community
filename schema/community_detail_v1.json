@@ -13,6 +13,10 @@
       "id": "/properties/description",
       "type": "string"
     },
+    "icon": {
+      "id": "/properties/icon",
+      "type": "string"
+    },
     "id": {
       "id": "/properties/id",
       "type": "integer",

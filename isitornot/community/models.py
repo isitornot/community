@@ -9,6 +9,7 @@ class Community(db.Entity):
     slug = Required(str, 16, unique=True, py_check=lambda val: val == quote(val))  # The main name for the community
     name = Optional(str)  # An optional display name which can contain characters not allowed in a slug
     description = Optional(LongStr)  # An optional description for the community. This can be markdown.
+    icon = Optional(LongStr)  # A URI, typically a data-uri or an external URL like gravatar
     owner = Required(str)
     tags = Set('Tag')  # could be a json list which would be smaller in the database, but this gives us automatic secondary indices
 
@@ -18,6 +19,7 @@ class Community(db.Entity):
             'slug': self.slug,
             'name': self.name if self.name is not "" else self.slug,
             'description': self.description,
+            'icon': self.icon,
             'owner': self.owner,
             'tags': [t.tag for t in self.tags]
         }

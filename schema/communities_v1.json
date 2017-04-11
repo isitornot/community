@@ -29,12 +29,17 @@
             "id": "/properties/communities/items/properties/slug",
             "type": "string",
             "pattern": "[a-zA-Z][a-zA-Z0-9.-]*"
+          },
+          "icon": {
+            "id": "/properties/communities/items/properties/icon",
+            "type": "string"
           }
         },
         "required": [
           "id",
           "name",
-          "slug"
+          "slug",
+          "icon"
         ],
         "type": "object"
       },
