@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 
-import os.path
 from isitornot.db import PonyDatabase
 from sanic import Sanic, response
+from sanic_cors import CORS, cross_origin
 from sanic_session import InMemorySessionInterface
 from sanic_openapi import swagger_blueprint, openapi_blueprint
 from sanic_jinja2 import SanicJinja2
@@ -24,14 +24,18 @@ DEFAULT_CONFIG = {
     },
     'DB_PROVIDER': 'sqlite',
     'DB_ARGS': [':memory:'],
-    'DB_KARGS': {'create_db': True}
+    'DB_KARGS': {'create_db': True},
+
+    'API_VERSION': '1.0.0',
+    'API_TITLE': 'IsItOrNot community',
+    'API_PRODUCES_CONTENT_TYPES': ['application/json']
 }
 
 
 app = Sanic(__name__)
 app.config.update(DEFAULT_CONFIG)
 app.config.from_envvar('CONFIG_FILE')
-app.static('/static', os.path.join(os.path.dirname(__file__), 'static'))
+CORS(app)
 app.blueprint(openapi_blueprint)
 app.blueprint(swagger_blueprint)
 session_interface = InMemorySessionInterface()

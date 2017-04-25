@@ -82,6 +82,13 @@
 
 - test:
   - group: "Community CRUD"
+  - name: "Test limit get"
+  - url: "/v1/communities?limit=1"
+  - validators:
+    - compare: {jsonpath_mini: 'communities', comparator: length_eq, expected: 1}
+
+- test:
+  - group: "Community CRUD"
   - name: "Delete community"
   - url: "/v1/communities/1"
   - method: "DELETE"
@@ -127,3 +134,4 @@
     - compare: {header: content-type, comparator: contains, expected: 'json'}
     - compare: {jsonpath_mini: 'communities', comparator: length_eq, expected: 1}
     - compare: {jsonpath_mini: 'communities.0.id', expected: 3}
+

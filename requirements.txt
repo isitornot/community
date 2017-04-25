@@ -28,6 +28,7 @@ PyJWT==1.4.2
 pyresttest==1.7.1
 PyYAML==3.12
 sanic==0.4.1
+sanic-cors==0.5.1.0
 sanic-jinja2==0.5.1
 sanic-openapi==0.1.5
 sanic-session==0.1.3

@@ -3,6 +3,7 @@ import os.path
 from pony.orm import db_session, ObjectNotFound, commit
 from sanic import Blueprint, exceptions, response
 from sanic.views import HTTPMethodView
+from sanic_openapi import doc
 from isitornot.auth.jwt_auth import unpack_auth
 from isitornot.rest_utils import validate_json
 
@@ -15,10 +16,18 @@ class CommunityView(HTTPMethodView):
     def __init__(self):
         super().__init__()
 
-    async def get(self, _):
+    async def options(self, _):
+        return response.text('')
+
+    @doc.summary("Retrieve a list of all communities. Optional 'limit' query parameter will limit the number of returned communities.")
+    @doc.produces(doc.List(Community))
+    async def get(self, request):
         with db_session:
             rval = []
-            for c in Community.select():
+            query = Community.select()
+            if 'limit' in request.args:
+                query = query.limit(int(request.args['limit'][0]))
+            for c in query:
                 rval.append({
                     'id': c.id,
                     'slug': c.slug,
@@ -27,6 +36,7 @@ class CommunityView(HTTPMethodView):
                 })
             return response.json({'communities': rval})
 
+    @doc.summary("Create a new community.")
     @validate_json(schema_file=os.path.join(os.path.dirname(__file__), "..", "..", "schema", "community_detail_v1.json"))
     async def post(self, request):
         if "id" in request.json:
@@ -53,14 +63,24 @@ class CommunityView(HTTPMethodView):
 
 
 class CommunityDetailView(HTTPMethodView):
-    async def get(self, _, id):
+    @doc.summary("Access community details by id")
+    @doc.produces(Community)
+    async def get(self, _, id: str):
         with db_session:
             try:
                 c = Community[id]
                 return response.json(c.to_dict())
+            except (ObjectNotFound, ValueError) as _:
+                pass  # try it as a slug
+            try:
+                c = Community.get(slug=id)
+                if c is None:
+                    raise exceptions.NotFound("Community {} not found".format(id))
+                return response.json(c.to_dict())
             except ObjectNotFound:
                 raise exceptions.NotFound("Community {} not found".format(id))
 
+    @doc.summary("Modify an existing community.")
     async def patch(self, request, id):
         with db_session:
             try:
@@ -88,6 +108,7 @@ class CommunityDetailView(HTTPMethodView):
             except ObjectNotFound:
                 raise exceptions.NotFound("Community {} not found".format(id))
 
+    @doc.summary("Delete a community")
     async def delete(self, _, id):
         with db_session:
             try:
