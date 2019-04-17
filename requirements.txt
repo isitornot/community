@@ -26,7 +26,7 @@ pycurl==7.43.0
 Pygments==2.2.0
 PyJWT==1.4.2
 pyresttest==1.7.1
-PyYAML==3.12
+pyyaml>=4.2b1
 sanic==0.4.1
 sanic-cors==0.5.1.0
 sanic-jinja2==0.5.1
